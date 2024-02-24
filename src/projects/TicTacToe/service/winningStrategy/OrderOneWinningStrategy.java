@@ -39,11 +39,11 @@ public class OrderOneWinningStrategy implements WinningStrategy{
         int row = lastMove.getCell().getRow();
         int col = lastMove.getCell().getCol();
 
-        boolean winnerResult = winnerCheckForCorners(board.getMatrix(), symbol)
+        boolean winnerResult = winnerCheckForCorners(symbol, row, col)
                 || checkAndUpdateForRowHashMap(row, symbol)
                 || checkAndUpdateForColHashMap(col, symbol)
-                || ( checkLeftDiagonal(row, col) && checkAndUpdateLeftDiagonalHashmap(symbol))
-                || ( checkRightDiagonal(row, col) && checkAndUpdateRightDiagonalHashmap(symbol));
+                || (checkLeftDiagonal(row, col) && checkAndUpdateLeftDiagonalHashmap(symbol))
+                || (checkRightDiagonal(row, col) && checkAndUpdateRightDiagonalHashmap(symbol));
 
         if(winnerResult)
             return player;
@@ -59,68 +59,53 @@ public class OrderOneWinningStrategy implements WinningStrategy{
         return ((row+col) == (dimension-1));
     }
 
-    //TODO: there are multiple duplicate lines of code, try to remove them.
-
-
-    //TODO: shorten this code using inbuilt hashmap methods
     private boolean checkAndUpdateForRowHashMap(int row, char symbol){
         HashMap<Character, Integer> rowHashMap = rowHashMapList.get(row);
-        if(rowHashMap.containsKey(symbol)){
-            rowHashMap.put(symbol, rowHashMap.get(symbol)+1);
-            return rowHashMap.get(symbol) == dimension;
-        } else{
-            rowHashMap.put(symbol, 1);
-        }
-        return false;
+        return checkAndUpdate(rowHashMap, symbol);
     }
 
-    //TODO : shorten this code using inbuilt hashmap methods
     private boolean checkAndUpdateForColHashMap(int col, char symbol){
         HashMap<Character, Integer> colHashMap = colHashMapList.get(col);
-        if(colHashMap.containsKey(symbol)){
-            colHashMap.put(symbol, colHashMap.get(symbol)+1);
-            return colHashMap.get(symbol) == dimension;
-        } else{
-            colHashMap.put(symbol, 1);
-        }
-        return false;
+        return checkAndUpdate(colHashMap, symbol);
     }
 
-    //TODO : shorten this code using inbuilt hashmap methods
     private boolean checkAndUpdateLeftDiagonalHashmap(char symbol){
-        if(leftDiagonal.containsKey(symbol)){
-            leftDiagonal.put(symbol, leftDiagonal.get(symbol)+1);
-            return leftDiagonal.get(symbol) == dimension;
-        } else{
-            leftDiagonal.put(symbol, 1);
-        }
-        return false;
+        return checkAndUpdate(leftDiagonal, symbol);
+    }
+
+    private boolean checkAndUpdateRightDiagonalHashmap(char symbol){
+        return checkAndUpdate(rightDiagonal, symbol);
     }
 
     //TODO : shorten this code using inbuilt hashmap methods
-    private boolean checkAndUpdateRightDiagonalHashmap(char symbol){
-        if(rightDiagonal.containsKey(symbol)){
-            rightDiagonal.put(symbol, rightDiagonal.get(symbol)+1);
-            return rightDiagonal.get(symbol) == dimension;
+    private boolean checkAndUpdate(HashMap<Character, Integer> map, char symbol) {
+        if(map.containsKey(symbol)){
+            map.put(symbol, map.get(symbol)+1);
+            return map.get(symbol) == dimension;
         } else{
-            rightDiagonal.put(symbol, 1);
+            map.put(symbol, 1);
         }
         return false;
     }
 
+    private boolean winnerCheckForCorners(char symbol, int row, int col) {
+        boolean isTopLeftCorner = (row==0 && col==0);
+        boolean isTopRightCorner = (row==0 && col==dimension-1);
+        boolean isBottomLeftCorner = (row==dimension-1 && col==0);
+        boolean isBottomRightCorner = (row==dimension-1 && col==dimension-1);
 
-    //TODO : implement this using a hashmap as well, create a hashmap for corners and check.
-    private boolean winnerCheckForCorners(List<List<Cell>> matrix, char symbol) {
-        if(cornerHashMap.containsKey(symbol)){
-            cornerHashMap.put(symbol, cornerHashMap.get(symbol)+1);
-            return cornerHashMap.get(symbol) == 4;
-        } else{
-            cornerHashMap.put(symbol, 1);
+        // check and update only if we are on corner cell
+        if(isTopLeftCorner || isTopRightCorner || isBottomLeftCorner || isBottomRightCorner) {
+            if(cornerHashMap.containsKey(symbol)){
+                cornerHashMap.put(symbol, cornerHashMap.get(symbol)+1);
+                return cornerHashMap.get(symbol) == 4;
+            } else{
+                cornerHashMap.put(symbol, 1);
+            }
         }
         return false;
     }
 }
-
 
 /*
         Steps for checking winner -
