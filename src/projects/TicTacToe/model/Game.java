@@ -1,8 +1,9 @@
 package projects.TicTacToe.model;
-
 import projects.TicTacToe.exception.InvalidBotCountException;
 import projects.TicTacToe.exception.InvalidPlayerSizeException;
 import projects.TicTacToe.exception.InvalidSymbolSetupException;
+import projects.TicTacToe.exception.InvalidGameDimensionException;
+
 import projects.TicTacToe.service.winningStrategy.WinningStrategy;
 
 import java.util.ArrayList;
@@ -157,8 +158,14 @@ public class Game {
         }
 
         //TODO: add a validation for dimension, it should be from 3 to 10.
+        private void validateDimension() {
+            if(!(dimension>=3 && dimension<=10)) {
+                throw new InvalidGameDimensionException("Dimension of game can be in the range [3, 10]");
+            }
+        }
 
         private void validate(){
+            validateDimension();
             validateBotCount();
             validateNumberOfPlayers();
             validatePlayerSymbols();
