@@ -1,4 +1,6 @@
 package projects.TicTacToe.model;
+import projects.TicTacToe.exception.OutOfBoundException;
+import projects.TicTacToe.exception.CellAlreadyFilledException;
 
 import java.util.Scanner;
 
@@ -25,9 +27,14 @@ public class Player {
         System.out.println("Enter the col for the target cell");
         int col = sc.nextInt();
 
-        //TODO: validate the row and col entered by the player | ex : inbound checks, filled or not filled etc.
-
+        if(row<0 || col<0 || row>= board.getDimension() || col >= board.getDimension()) {
+            throw new OutOfBoundException("row or col is out of bound");
+        }
         Cell playedMoveCell = board.getMatrix().get(row).get(col);
+
+        if(playedMoveCell.getCellState() == CellState.FILLED) {
+            throw new CellAlreadyFilledException("cell already filled");
+        }
         playedMoveCell.setCellState(CellState.FILLED);
         playedMoveCell.setPlayer(this);
 
