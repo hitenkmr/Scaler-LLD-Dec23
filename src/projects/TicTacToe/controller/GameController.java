@@ -33,6 +33,10 @@ public class GameController {
         return game.getWinningStrategy().checkWinner(game.getCurrentBoard(), lastMovePlayed);
     }
 
+    public boolean isGameDraw(Game game){
+        return game.getWinningStrategy().isGameDraw();
+    }
+
     public Board undoMove(Game game, Move lastPlayedMove){
         return null;
     }

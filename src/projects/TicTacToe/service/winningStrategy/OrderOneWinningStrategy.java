@@ -5,19 +5,22 @@ import projects.TicTacToe.model.Cell;
 import projects.TicTacToe.model.Move;
 import projects.TicTacToe.model.Player;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 public class OrderOneWinningStrategy implements WinningStrategy{
 
-    private int dimension;
-    private List<HashMap<Character, Integer>> rowHashMapList; // index in the list will correspond to the row number for hashmap identification
-    private List<HashMap<Character, Integer>> colHashMapList; // index in the list will correspond to the col number for hashmap identification
-    private HashMap<Character, Integer> leftDiagonal;
-    private HashMap<Character, Integer> rightDiagonal;
-    private HashMap<Character, Integer> cornerHashMap;
-
+    private final int dimension;
+    private final List<HashMap<Character, Integer>> rowHashMapList; // index in the list will correspond to the row number for hashmap identification
+    private final List<HashMap<Character, Integer>> colHashMapList; // index in the list will correspond to the col number for hashmap identification
+    private final HashMap<Character, Integer> leftDiagonal;
+    private final HashMap<Character, Integer> rightDiagonal;
+    private final HashMap<Character, Integer> cornerHashMap;
+    private final Set<HashMap<Character, Integer>> allMapsSet;
 
     public OrderOneWinningStrategy(int dimension) {
         this.dimension = dimension;
@@ -30,6 +33,12 @@ public class OrderOneWinningStrategy implements WinningStrategy{
             rowHashMapList.add(new HashMap<>());
             colHashMapList.add(new HashMap<>());
         }
+        allMapsSet = new HashSet<>();
+        allMapsSet.add(rightDiagonal);
+        allMapsSet.add(leftDiagonal);
+        allMapsSet.addAll(rowHashMapList);
+        allMapsSet.addAll(colHashMapList);
+        allMapsSet.add(cornerHashMap);
     }
 
     @Override
@@ -39,7 +48,7 @@ public class OrderOneWinningStrategy implements WinningStrategy{
         int row = lastMove.getCell().getRow();
         int col = lastMove.getCell().getCol();
 
-        boolean winnerResult = winnerCheckForCorners(symbol, row, col)
+        boolean winnerResult = (checkCorner(row, col) && winnerCheckForCorners(board.getMatrix(), symbol))
                 || checkAndUpdateForRowHashMap(row, symbol)
                 || checkAndUpdateForColHashMap(col, symbol)
                 || (checkLeftDiagonal(row, col) && checkAndUpdateLeftDiagonalHashmap(symbol))
@@ -51,6 +60,18 @@ public class OrderOneWinningStrategy implements WinningStrategy{
             return null;
     }
 
+    public boolean isGameDraw(){
+        return (allMapsSet.isEmpty());
+    }
+
+    // remove hashmap from set if key count is >= 2, this helps us check if the game is draw
+    // by checking if set count is 0
+    private void removeFromSet(HashMap<Character, Integer> map) {
+        if(allMapsSet.contains(map) && (long) map.keySet().size() >= 2) {
+            allMapsSet.remove(map);
+        }
+    }
+
     private boolean checkLeftDiagonal(int row, int col){
         return row==col;
     }
@@ -59,6 +80,16 @@ public class OrderOneWinningStrategy implements WinningStrategy{
         return ((row+col) == (dimension-1));
     }
 
+    private boolean checkCorner(int row, int col){
+        return (
+                (row==0 && col==0)
+                || (row==0 && col==dimension-1)
+                || (row==dimension-1 && col==0)
+                || (row==dimension-1 && col==dimension-1)
+        );
+    }
+
+    //TODO: shorten this code using inbuilt hashmap methods
     private boolean checkAndUpdateForRowHashMap(int row, char symbol){
         HashMap<Character, Integer> rowHashMap = rowHashMapList.get(row);
         return checkAndUpdate(rowHashMap, symbol);
@@ -81,27 +112,22 @@ public class OrderOneWinningStrategy implements WinningStrategy{
     private boolean checkAndUpdate(HashMap<Character, Integer> map, char symbol) {
         if(map.containsKey(symbol)){
             map.put(symbol, map.get(symbol)+1);
+            removeFromSet(map); //check for draw
             return map.get(symbol) == dimension;
         } else{
             map.put(symbol, 1);
+            removeFromSet(map); //check for draw
         }
+
         return false;
     }
 
-    private boolean winnerCheckForCorners(char symbol, int row, int col) {
-        boolean isTopLeftCorner = (row==0 && col==0);
-        boolean isTopRightCorner = (row==0 && col==dimension-1);
-        boolean isBottomLeftCorner = (row==dimension-1 && col==0);
-        boolean isBottomRightCorner = (row==dimension-1 && col==dimension-1);
-
-        // check and update only if we are on corner cell
-        if(isTopLeftCorner || isTopRightCorner || isBottomLeftCorner || isBottomRightCorner) {
-            if(cornerHashMap.containsKey(symbol)){
-                cornerHashMap.put(symbol, cornerHashMap.get(symbol)+1);
-                return cornerHashMap.get(symbol) == 4;
-            } else{
-                cornerHashMap.put(symbol, 1);
-            }
+    private boolean winnerCheckForCorners(List<List<Cell>> matrix, char symbol) {
+        if(cornerHashMap.containsKey(symbol)){
+            cornerHashMap.put(symbol, cornerHashMap.get(symbol)+1);
+            return cornerHashMap.get(symbol) == 4;
+        } else{
+            cornerHashMap.put(symbol, 1);
         }
         return false;
     }

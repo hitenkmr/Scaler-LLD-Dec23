@@ -9,4 +9,7 @@ public class OrderNWinningStrategy implements WinningStrategy{
     public Player checkWinner(Board board, Move lastMove) {
         return null;
     }
+    public boolean isGameDraw() {
+        return false;
+    }
 }
