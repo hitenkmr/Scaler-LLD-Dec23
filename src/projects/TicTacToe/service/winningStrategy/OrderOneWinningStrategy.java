@@ -20,7 +20,9 @@ public class OrderOneWinningStrategy implements WinningStrategy{
     private final HashMap<Character, Integer> leftDiagonal;
     private final HashMap<Character, Integer> rightDiagonal;
     private final HashMap<Character, Integer> cornerHashMap;
-    private final Set<HashMap<Character, Integer>> allMapsSet;
+
+    // for checking if the game is a draw
+    private final HashMap<String, HashMap<Character, Integer>> allMapsMap;
 
     public OrderOneWinningStrategy(int dimension) {
         this.dimension = dimension;
@@ -33,12 +35,18 @@ public class OrderOneWinningStrategy implements WinningStrategy{
             rowHashMapList.add(new HashMap<>());
             colHashMapList.add(new HashMap<>());
         }
-        allMapsSet = new HashSet<>();
-        allMapsSet.add(rightDiagonal);
-        allMapsSet.add(leftDiagonal);
-        allMapsSet.addAll(rowHashMapList);
-        allMapsSet.addAll(colHashMapList);
-        allMapsSet.add(cornerHashMap);
+
+        // for draw
+        allMapsMap = new HashMap<>();
+        allMapsMap.put("rightDiagonal", rightDiagonal);
+        allMapsMap.put("leftDiagonal", leftDiagonal);
+        for(int i=0;i<rowHashMapList.size();i++) {
+            allMapsMap.put(i + "_row", rowHashMapList.get(i));
+        }
+
+        for(int i=0;i<colHashMapList.size();i++) {
+            allMapsMap.put(i + "_col", colHashMapList.get(i));
+        }
     }
 
     @Override
@@ -61,14 +69,17 @@ public class OrderOneWinningStrategy implements WinningStrategy{
     }
 
     public boolean isGameDraw(){
-        return (allMapsSet.isEmpty());
+        return (allMapsMap.isEmpty());
     }
 
-    // remove hashmap from set if key count is >= 2, this helps us check if the game is draw
+    // remove hashmap from set if hashmap key count is >= 2, this helps us check if the game is draw
     // by checking if set count is 0
-    private void removeFromSet(HashMap<Character, Integer> map) {
-        if(allMapsSet.contains(map) && (long) map.keySet().size() >= 2) {
-            allMapsSet.remove(map);
+    private void removeFromAllMaps(String key) {
+        if(allMapsMap.get(key) != null) {
+            HashMap<Character, Integer> drawMap = allMapsMap.get(key);
+            if(drawMap.keySet().size() >= 2) {
+                allMapsMap.remove(key);
+            }
         }
     }
 
@@ -92,31 +103,31 @@ public class OrderOneWinningStrategy implements WinningStrategy{
     //TODO: shorten this code using inbuilt hashmap methods
     private boolean checkAndUpdateForRowHashMap(int row, char symbol){
         HashMap<Character, Integer> rowHashMap = rowHashMapList.get(row);
-        return checkAndUpdate(rowHashMap, symbol);
+        return checkAndUpdate(rowHashMap, symbol, row+"_row");
     }
 
     private boolean checkAndUpdateForColHashMap(int col, char symbol){
         HashMap<Character, Integer> colHashMap = colHashMapList.get(col);
-        return checkAndUpdate(colHashMap, symbol);
+        return checkAndUpdate(colHashMap, symbol, col+"_col");
     }
 
     private boolean checkAndUpdateLeftDiagonalHashmap(char symbol){
-        return checkAndUpdate(leftDiagonal, symbol);
+        return checkAndUpdate(leftDiagonal, symbol, "leftDiagonal");
     }
 
     private boolean checkAndUpdateRightDiagonalHashmap(char symbol){
-        return checkAndUpdate(rightDiagonal, symbol);
+        return checkAndUpdate(rightDiagonal, symbol, "rightDiagonal");
     }
 
     //TODO : shorten this code using inbuilt hashmap methods
-    private boolean checkAndUpdate(HashMap<Character, Integer> map, char symbol) {
+    private boolean checkAndUpdate(HashMap<Character, Integer> map, char symbol, String key) {
         if(map.containsKey(symbol)){
             map.put(symbol, map.get(symbol)+1);
-            removeFromSet(map); //check for draw
+            //removeFromAllMaps(key); //check for draw
             return map.get(symbol) == dimension;
         } else{
             map.put(symbol, 1);
-            removeFromSet(map); //check for draw
+            removeFromAllMaps(key); //check for draw
         }
 
         return false;

@@ -13,11 +13,3 @@ public class OrderNSqWinningStrategy implements WinningStrategy{
         return false;
     }
 }
-
-/*
-
-* $ _
-$ * *
-_ * $
-
-*/

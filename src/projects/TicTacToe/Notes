@@ -18,6 +18,18 @@ TASKS -
     If player says Y -> undo the move, go to back previous board state [the actual and internal hashmaps], and ask the player
     for new row and col for entry
     If player says N -> move ahead and ask the next player or bot to make the move.
+
+    4*4 matrix draw
+    # -> player 1
+    $ -> player 2
+    @ -> player 3
+    _ -> empty cell
+
+    # $ _ @
+    @ _ $ _
+    _ _ # @
+    _ # # $
+
 3. Replay logic implementation
     Print all the board states with proper details
     List<Move> => <P1, [0,0]>

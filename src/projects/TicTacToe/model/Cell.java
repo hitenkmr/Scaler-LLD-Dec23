@@ -52,4 +52,11 @@ public class Cell {
     public void setPlayer(Player player) {
         this.player = player;
     }
+
+    public Cell clone() {
+        Cell copy = new Cell(row, col);
+        copy.setCellState(this.cellState);
+        copy.setPlayer(this.player);
+        return  copy;
+    }
 }

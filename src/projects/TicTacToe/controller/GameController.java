@@ -37,8 +37,8 @@ public class GameController {
         return game.getWinningStrategy().isGameDraw();
     }
 
-    public Board undoMove(Game game, Move lastPlayedMove){
-        return null;
+    public void undoLastMove(Game game){
+        game.undoLastMove();
     }
 
     public void replayGame(Game game){

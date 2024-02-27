@@ -99,16 +99,24 @@ public class Game {
         this.numberOfSymbols = numberOfSymbols;
     }
 
+    public void undoLastMove(){
+        // remove last board state
+        boardStates.removeLast();
+        // set previous board as current board state
+        if(!boardStates.isEmpty()) {
+            setCurrentBoard(boardStates.getLast());
+        }
+
+        // remove last move
+        if(!moves.isEmpty()) {
+            moves.removeLast();
+        }
+    }
+
     public static class Builder{
         private int dimension;
-        private Board currentBoard;
         private List<Player> players;
         private WinningStrategy winningStrategy;
-
-        public Builder setCurrentBoard(Board currentBoard) {
-            this.currentBoard = currentBoard;
-            return this;
-        }
 
         public Builder setPlayers(List<Player> players) {
             this.players = players;
@@ -157,7 +165,7 @@ public class Game {
             }
         }
 
-        //TODO: add a validation for dimension, it should be from 3 to 10.
+        //add a validation for dimension, it should be from 3 to 10.
         private void validateDimension() {
             if(!(dimension>=3 && dimension<=10)) {
                 throw new InvalidGameDimensionException("Dimension of game can be in the range [3, 10]");

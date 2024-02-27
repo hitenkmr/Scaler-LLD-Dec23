@@ -51,4 +51,29 @@ public class Board {
     public void setDimension(int dimension) {
         this.dimension = dimension;
     }
+
+    public Board clone() {
+        Board boardCopy = new Board(this.dimension);
+        List<List<Cell>> matrixCopy = new ArrayList<>();
+        for(List<Cell> cellList: matrix) {
+            List<Cell> cellListCopy = new ArrayList<>();
+            for(Cell cell: cellList) {
+                cellListCopy.add(cell.clone());
+            }
+            matrixCopy.add(cellListCopy);
+        }
+        boardCopy.setMatrix(matrixCopy);
+        return boardCopy;
+    }
+
+    public boolean isEmpty() {
+        for(List<Cell> cells: getMatrix()) {
+            for(Cell cell: cells) {
+                if(cell.getCellState() == CellState.FILLED){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
