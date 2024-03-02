@@ -9,6 +9,7 @@ public class Gate extends BaseModel{
     private GateStatus gateStatus;
     private String operatorName;
 
+
     public Gate() {
     }
 

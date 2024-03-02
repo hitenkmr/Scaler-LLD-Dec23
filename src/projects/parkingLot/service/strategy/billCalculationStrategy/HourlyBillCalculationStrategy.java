@@ -8,15 +8,22 @@ import projects.parkingLot.models.enums.BillStatus;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class SimpleBillCalculationStrategy implements BillCalculationStrategy{
-    //1 sec is 1 Rs.
+public class HourlyBillCalculationStrategy implements  BillCalculationStrategy {
+    private final double baseRate;
+    private final double hourlyRate;
+    public HourlyBillCalculationStrategy(double surge, double baseRate, double hourlyRate){
+        this.baseRate = baseRate;
+        this.hourlyRate = hourlyRate;
+    }
+
     @Override
     public Bill generateBill(Ticket ticket, Gate exitGate) {
         LocalDateTime entryTime = ticket.getEntryTime();
         LocalDateTime exitTime = LocalDateTime.now();
-        long amount = ChronoUnit.SECONDS.between(exitTime, entryTime);
+        long seconds = ChronoUnit.SECONDS.between(exitTime, entryTime);
+        int numOfHours = (int) ((seconds/60)/60);
         Bill bill = new Bill();
-        bill.setAmount(amount);
+        bill.setAmount(baseRate + hourlyRate*numOfHours);
         bill.setTicket(ticket);
         bill.setExitTime(exitTime);
         bill.setId(exitTime.hashCode());

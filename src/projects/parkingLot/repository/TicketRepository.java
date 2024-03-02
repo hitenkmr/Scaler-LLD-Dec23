@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class TicketRepository {
     private Map<Integer, Ticket> ticketMap; // table
-
+    private static int idCounter = 0;
     public TicketRepository() {
         this.ticketMap = new HashMap<>();
     }
@@ -22,6 +22,7 @@ public class TicketRepository {
     }
 
     public void put(Ticket ticket){
+        ticket.setId(++idCounter);
         ticketMap.put(ticket.getId(), ticket);
         System.out.println("Ticket has been added successfully");
     }

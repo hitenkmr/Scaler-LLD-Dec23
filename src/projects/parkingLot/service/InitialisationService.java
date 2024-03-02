@@ -1,14 +1,14 @@
 package projects.parkingLot.service;
 
-import projects.parkingLot.models.Gate;
-import projects.parkingLot.models.ParkingFloor;
-import projects.parkingLot.models.ParkingLot;
-import projects.parkingLot.models.ParkingSpot;
+import projects.parkingLot.models.*;
 import projects.parkingLot.models.enums.*;
 import projects.parkingLot.repository.GateRepository;
 import projects.parkingLot.repository.ParkingFloorRepository;
 import projects.parkingLot.repository.ParkingLotRepository;
 import projects.parkingLot.repository.ParkingSpotRepository;
+import projects.parkingLot.repository.BillRepository;
+import projects.parkingLot.repository.TicketRepository;
+import projects.parkingLot.repository.PaymentRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,24 @@ public class InitialisationService {
     private ParkingLotRepository parkingLotRepository;
     private ParkingFloorRepository parkingFloorRepository;
     private ParkingSpotRepository parkingSpotRepository;
+    private TicketRepository ticketRepository;
+    private BillRepository billRepository;
+    private PaymentRepository paymentRepository;
 
-    public InitialisationService(GateRepository gateRepository, ParkingLotRepository parkingLotRepository, ParkingFloorRepository parkingFloorRepository, ParkingSpotRepository parkingSpotRepository) {
+    public InitialisationService(GateRepository gateRepository,
+                                 ParkingLotRepository parkingLotRepository,
+                                 ParkingFloorRepository parkingFloorRepository,
+                                 ParkingSpotRepository parkingSpotRepository,
+                                 TicketRepository ticketRepository,
+                                 BillRepository billRepository,
+                                 PaymentRepository paymentRepository) {
         this.gateRepository = gateRepository;
         this.parkingLotRepository = parkingLotRepository;
         this.parkingFloorRepository = parkingFloorRepository;
         this.parkingSpotRepository = parkingSpotRepository;
+        this.ticketRepository = ticketRepository;
+        this.billRepository = billRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     public ParkingLot init(){
