@@ -8,6 +8,8 @@ import projects.parkingLot.repository.*;
 import projects.parkingLot.service.InitialisationService;
 import projects.parkingLot.service.TicketService;
 import projects.parkingLot.service.strategy.billCalculationStrategy.SurgeBillCalculationStrategy;
+import projects.parkingLot.service.strategy.paymentStrategy.PaymentStrategy;
+import projects.parkingLot.service.strategy.paymentStrategy.PaymentStrategyFactory;
 import projects.parkingLot.service.strategy.spotAllocationStrategy.SpotAllocationStrategyFactory;
 
 import java.util.*;
@@ -42,6 +44,7 @@ public class ParkingLotMain {
                 parkingLot.getParkingLotStatus().equals(ParkingLotStatus.CLOSED)) {
             System.out.println("We are sorry our " + parkingLot.getName() + " parking lot is:" + parkingLot.getParkingLotStatus());
         } else {
+            // create new vehicle to enter in parking lot
             Vehicle vehicle = new Vehicle();
             System.out.println("Please Enter the Vehicle Number:");
             String vehicleNumber = userInput.next();
@@ -53,6 +56,7 @@ public class ParkingLotMain {
             vehicle.setColor(vehicleColor);
             vehicle.setVehicleType(getVehicleType(vehicle_type));
 
+            // generate ticket
             parkingLot.setSpotAllocationStrategy(SpotAllocationStrategyFactory.getSpotAllocationStrategy(SpotAllocationStrategyType.LINEAR));
             ParkingSpot parkingSpot = parkingLot.getSpotAllocationStrategy().getSpotForVehicle(parkingLot, vehicle);
             TicketController ticketController = new TicketController(new TicketService(ticketRepository, parkingFloorRepository));
@@ -65,12 +69,22 @@ public class ParkingLotMain {
             long seconds = userInput.nextInt();
             Thread.sleep(seconds*1000);
 
+            // generate bill
             parkingLot.setBillCalculationStrategy(new SurgeBillCalculationStrategy(getSurge(parkingLot), 100, 50));
-
             int floorNumber = parkingFloorRepository.get(parkingSpot.getNumber()/100).getFloorNumber();
-            Bill bill =  parkingLot.getBillCalculationStrategy().generateBill(ticket, gateRepository.get(floorNumber*1000 + 2));
+            Bill bill = parkingLot.getBillCalculationStrategy().generateBill(ticket, gateRepository.get(floorNumber*1000 + 2));
+            billRepository.put(bill);
             System.out.println("Bill has been generated");
             System.out.println("Amount is: " + bill.getAmount());
+
+            // make payment for the bill
+            parkingLot.setPaymentStrategy(PaymentStrategyFactory.getPaymentStrategy(PaymentMode.CASH));
+            Payment payment = parkingLot.getPaymentStrategy().makePayement(bill);
+            paymentRepository.put(payment);
+
+            System.out.println("Payment for vehicle number: " + vehicle.getVehicleNumber() + " and bill id: " + bill.getId() + " has been done");
+            System.out.println("Amount collected is: " + paymentRepository.get(payment.getId()).getAmount());
+            System.out.println("payment transaction reference number is: " + paymentRepository.get(payment.getId()).getTransactionRefNumber());
         }
         System.out.println("END");
     }

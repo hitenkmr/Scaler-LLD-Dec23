@@ -11,7 +11,7 @@ import java.util.Map;
 public class PaymentRepository {
 
     private Map<Integer, Payment> paymentMap; // table
-
+    private static int idCounter = 0;
     public PaymentRepository() {
         this.paymentMap = new HashMap<>();
     }
@@ -25,6 +25,7 @@ public class PaymentRepository {
     }
 
     public void put(Payment payment){
+        payment.setId(++idCounter);
         paymentMap.put(payment.getId(), payment);
         System.out.println("Payment has been added successfully");
     }

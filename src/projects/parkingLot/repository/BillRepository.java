@@ -11,7 +11,7 @@ import java.util.Map;
 public class BillRepository {
 
     private Map<Integer, Bill> billMap; // table
-
+    private int idCounter = 0;
     public BillRepository() {
         this.billMap = new HashMap<>();
     }
@@ -25,6 +25,7 @@ public class BillRepository {
     }
 
     public void put(Bill bill){
+        bill.setId(++idCounter);
         billMap.put(bill.getId(), bill);
         System.out.println("Bill has been added successfully");
     }

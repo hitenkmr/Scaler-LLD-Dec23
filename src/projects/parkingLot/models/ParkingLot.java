@@ -3,6 +3,7 @@ package projects.parkingLot.models;
 import projects.parkingLot.models.enums.ParkingLotStatus;
 import projects.parkingLot.models.enums.VehicleType;
 import projects.parkingLot.service.strategy.billCalculationStrategy.BillCalculationStrategy;
+import projects.parkingLot.service.strategy.paymentStrategy.PaymentStrategy;
 import projects.parkingLot.service.strategy.spotAllocationStrategy.SpotAllocationStrategy;
 
 import java.util.List;
@@ -16,11 +17,20 @@ public class ParkingLot extends BaseModel{
     private int capacity;
     private BillCalculationStrategy billCalculationStrategy;
     private SpotAllocationStrategy spotAllocationStrategy;
+    private PaymentStrategy paymentStrategy;
 
     public ParkingLot() {
     }
 
-    public ParkingLot(String name, String address, List<ParkingFloor> floors, ParkingLotStatus parkingLotStatus, List<VehicleType> vehicleTypesSupported, int capacity, BillCalculationStrategy billCalculationStrategy, SpotAllocationStrategy spotAllocationStrategy) {
+    public ParkingLot(String name,
+                      String address,
+                      List<ParkingFloor> floors,
+                      ParkingLotStatus parkingLotStatus,
+                      List<VehicleType> vehicleTypesSupported,
+                      int capacity,
+                      BillCalculationStrategy billCalculationStrategy,
+                      SpotAllocationStrategy spotAllocationStrategy,
+                      PaymentStrategy paymentStrategy) {
         this.name = name;
         this.address = address;
         this.floors = floors;
@@ -29,6 +39,7 @@ public class ParkingLot extends BaseModel{
         this.capacity = capacity;
         this.billCalculationStrategy = billCalculationStrategy;
         this.spotAllocationStrategy = spotAllocationStrategy;
+        this.paymentStrategy = paymentStrategy;
     }
 
     public String getName() {
@@ -93,5 +104,11 @@ public class ParkingLot extends BaseModel{
 
     public void setSpotAllocationStrategy(SpotAllocationStrategy spotAllocationStrategy) {
         this.spotAllocationStrategy = spotAllocationStrategy;
+    }
+    
+    public PaymentStrategy getPaymentStrategy() { return paymentStrategy; }
+
+    public void setPaymentStrategy(PaymentStrategy paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
     }
 }
